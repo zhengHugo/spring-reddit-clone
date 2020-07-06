@@ -28,6 +28,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+    /**
+     * Authenticate all requests of path {@code /api/auth/**}. Other requests
+     * are required to be authenticated by {@code jwtAuthenticationFilter}
+     * @param httpSecurity
+     * @throws Exception
+     */
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf().disable().authorizeRequests()

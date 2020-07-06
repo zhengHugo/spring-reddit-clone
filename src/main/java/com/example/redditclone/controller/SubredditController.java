@@ -30,4 +30,10 @@ public class SubredditController {
     public ResponseEntity<List<SubredditDto>> getAllSubreddits(){
         return ResponseEntity.status(HttpStatus.OK).body(subredditService.getAll());
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<SubredditDto> getSubreddit(@PathVariable Long id){
+        return ResponseEntity.status(HttpStatus.OK).body(subredditService.getSubreddit(id));
+    }
+
 }
