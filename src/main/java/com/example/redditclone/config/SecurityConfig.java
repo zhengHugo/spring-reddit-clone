@@ -4,6 +4,7 @@ import com.example.redditclone.security.JwtAuthenticationFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -19,42 +20,56 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @AllArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final UserDetailsService userDetailsService;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final UserDetailsService userDetailsService;
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Bean(BeanIds.AUTHENTICATION_MANAGER)
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
+  @Bean(BeanIds.AUTHENTICATION_MANAGER)
+  @Override
+  public AuthenticationManager authenticationManagerBean() throws Exception {
+    return super.authenticationManagerBean();
+  }
 
-    /**
-     * Authenticate all requests of path {@code /api/auth/**}. Other requests
-     * are required to be authenticated by {@code jwtAuthenticationFilter}
-     * @param httpSecurity
-     * @throws Exception
-     */
-    @Override
-    public void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf().disable().authorizeRequests()
-            .antMatchers("/api/auth/**").permitAll()
-            .anyRequest().authenticated();
-        httpSecurity.addFilterBefore(jwtAuthenticationFilter,
-            UsernamePasswordAuthenticationFilter.class);
+  /**
+   * Authenticate all requests of path {@code /api/auth/**}. Other requests are required to be
+   * authenticated by {@code jwtAuthenticationFilter}
+   *
+   * @param httpSecurity
+   * @throws Exception
+   */
+  @Override
+  public void configure(HttpSecurity httpSecurity) throws Exception {
+    httpSecurity
+        .csrf()
+        .disable()
+        .authorizeRequests()
+        .antMatchers("/api/auth/**")
+        .permitAll()
+        .antMatchers(HttpMethod.GET, "/api/subreddit")
+        .permitAll()
+        .antMatchers(
+            "/v2/api-docs",
+            "/configuration/ui",
+            "/swagger-resources/**",
+            "/configuration/security",
+            "/swagger-ui/**",
+            "/webjars/**")
+        .permitAll()
+        .anyRequest()
+        .authenticated();
+    httpSecurity.addFilterBefore(
+        jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+  }
 
-    }
+  @Autowired
+  public void configureGlobal(AuthenticationManagerBuilder authenticationManagerBuilder)
+      throws Exception {
+    authenticationManagerBuilder
+        .userDetailsService(userDetailsService)
+        .passwordEncoder(passwordEncoder());
+  }
 
-    @Autowired
-    public void configureGlobal(
-        AuthenticationManagerBuilder authenticationManagerBuilder)
-        throws Exception {
-        authenticationManagerBuilder.userDetailsService(userDetailsService)
-            .passwordEncoder(passwordEncoder());
-
-    }
-
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 }
