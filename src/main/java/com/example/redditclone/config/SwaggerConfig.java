@@ -14,7 +14,7 @@ import springfox.documentation.spring.web.plugins.Docket;
 public class SwaggerConfig {
 
   @Bean
-  public Docket redditCloneApi(){
+  public Docket redditCloneApi() {
     return new Docket(DocumentationType.SWAGGER_2)
         .select()
         .apis(RequestHandlerSelectors.any())
@@ -23,7 +23,7 @@ public class SwaggerConfig {
         .apiInfo(getApiInfo());
   }
 
-  private ApiInfo getApiInfo(){
+  private ApiInfo getApiInfo() {
     return new ApiInfoBuilder()
         .title("Reddit Cone API")
         .version("1.0")
@@ -32,5 +32,4 @@ public class SwaggerConfig {
         .license("Apache License Version 2.0")
         .build();
   }
-
 }

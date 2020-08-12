@@ -16,11 +16,11 @@ import java.security.cert.CertificateException;
 import java.time.Instant;
 import java.util.Date;
 
-
 @Service
 public class JwtProvider {
 
   private KeyStore keyStore;
+
   @Value("${jwt.expiration.time}")
   private Long jwtExpirationInMillis;
 
@@ -28,12 +28,10 @@ public class JwtProvider {
   public void init() {
     try {
       keyStore = KeyStore.getInstance("JKS");
-      InputStream resourceAsStream =
-          getClass().getResourceAsStream("/springblog.jks");
+      InputStream resourceAsStream = getClass().getResourceAsStream("/springblog.jks");
       keyStore.load(resourceAsStream, "secret".toCharArray());
     } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException e) {
-      throw new SpringRedditException(
-          "Exception occurred while loading the key store", e);
+      throw new SpringRedditException("Exception occurred while loading the key store", e);
     }
   }
 
@@ -42,44 +40,36 @@ public class JwtProvider {
     return Jwts.builder()
         .setSubject(principle.getUsername())
         .signWith(getPrivateKey())
-        .setExpiration(
-            Date.from(Instant.now().plusMillis(jwtExpirationInMillis)))
+        .setExpiration(Date.from(Instant.now().plusMillis(jwtExpirationInMillis)))
         .compact();
   }
 
   public String generateTokenWithUsername(String username) {
     return Jwts.builder()
         .setSubject(username)
-        .setIssuedAt(
-            Date.from(Instant.now()))
+        .setIssuedAt(Date.from(Instant.now()))
         .signWith(getPrivateKey())
         .setExpiration(Date.from(Instant.now().plusMillis(jwtExpirationInMillis)))
         .compact();
   }
 
-
   public boolean validateToken(String jws) {
-    Jwts.parserBuilder().setSigningKey(getPublicKey()).build()
-        .parseClaimsJws(jws);
+    Jwts.parserBuilder().setSigningKey(getPublicKey()).build().parseClaimsJws(jws);
     return true;
   }
 
   public String getUsernameFromJwt(String token) {
     Claims claims =
-        Jwts.parserBuilder().setSigningKey(getPublicKey()).build()
-            .parseClaimsJws(token).getBody();
+        Jwts.parserBuilder().setSigningKey(getPublicKey()).build().parseClaimsJws(token).getBody();
     return claims.getSubject();
-
   }
-
 
   private PrivateKey getPrivateKey() {
     try {
-      return (PrivateKey) keyStore
-          .getKey("springblog", "secret".toCharArray());
+      return (PrivateKey) keyStore.getKey("springblog", "secret".toCharArray());
     } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException e) {
-      throw new SpringRedditException("Exception occurred while " +
-          "retrieving public key from key store");
+      throw new SpringRedditException(
+          "Exception occurred while " + "retrieving public key from key store");
     }
   }
 
@@ -87,8 +77,8 @@ public class JwtProvider {
     try {
       return keyStore.getCertificate("springblog").getPublicKey();
     } catch (KeyStoreException e) {
-      throw new SpringRedditException("Error occurred while retrieving " +
-          "public key from keystore. ", e);
+      throw new SpringRedditException(
+          "Error occurred while retrieving " + "public key from keystore. ", e);
     }
   }
 

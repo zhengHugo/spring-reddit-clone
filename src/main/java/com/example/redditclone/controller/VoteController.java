@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class VoteController {
 
-    private final VoteService voteService;
+  private final VoteService voteService;
 
-    @PostMapping
-    public ResponseEntity<Void> vote(@RequestBody VoteDto voteDto){
-        voteService.vote(voteDto);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+  @PostMapping
+  public ResponseEntity<Void> vote(@RequestBody VoteDto voteDto) {
+    voteService.vote(voteDto);
+    return new ResponseEntity<>(HttpStatus.OK);
+  }
 }

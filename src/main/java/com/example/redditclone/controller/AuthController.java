@@ -21,26 +21,20 @@ public class AuthController {
   private final AuthService authService;
   private final RefreshTokenService refreshTokenService;
 
-
   @PostMapping("/signup")
-  public ResponseEntity<String> signup(
-      @RequestBody RegisterRequest registerRequest) {
+  public ResponseEntity<String> signup(@RequestBody RegisterRequest registerRequest) {
     authService.signup(registerRequest);
-    return new ResponseEntity<>("User registration successful",
-        HttpStatus.OK);
-
+    return new ResponseEntity<>("User registration successful", HttpStatus.OK);
   }
 
   @GetMapping("accountVerification/{token}")
   public ResponseEntity<String> verifyAccount(@PathVariable String token) {
     authService.verifyAccount(token);
-    return new ResponseEntity<>("Account activated successfully",
-        HttpStatus.OK);
+    return new ResponseEntity<>("Account activated successfully", HttpStatus.OK);
   }
 
   @PostMapping("/login")
-  public AuthenticationResponse login(
-      @RequestBody LoginRequest loginRequest) {
+  public AuthenticationResponse login(@RequestBody LoginRequest loginRequest) {
     return authService.login(loginRequest);
   }
 
@@ -56,6 +50,4 @@ public class AuthController {
     refreshTokenService.deleteRefreshToken(refreshTokenRequest.getRefreshToken());
     return ResponseEntity.status(HttpStatus.OK).body("Refresh token deleted successfully");
   }
-
-
 }

@@ -2,6 +2,7 @@ package com.example.redditclone.security;
 
 import com.example.redditclone.service.UserDetailServiceImpl;
 import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,36 +21,33 @@ import java.io.IOException;
 @AllArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtProvider jwtProvider;
-    private final UserDetailServiceImpl userDetailsService;
+  private final JwtProvider jwtProvider;
+  private final UserDetailServiceImpl userDetailsService;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest httpServletRequest,
-                                    HttpServletResponse httpServletResponse,
-                                    FilterChain filterChain)
-        throws ServletException, IOException {
-        String jwt = getJwtFromRequest(httpServletRequest);
-        if (StringUtils.hasText(jwt) && jwtProvider.validateToken(jwt)) {
-            String username = jwtProvider.getUsernameFromJwt(jwt);
-            UserDetails userDetails =
-                userDetailsService.loadUserByUsername(username);
-            UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(userDetails, null,
-                    userDetails.getAuthorities());
-            authenticationToken.setDetails(new WebAuthenticationDetailsSource()
-                .buildDetails(httpServletRequest));
-            SecurityContextHolder.getContext()
-                .setAuthentication(authenticationToken);
-        }
-        filterChain.doFilter(httpServletRequest, httpServletResponse);
+  @Override
+  protected void doFilterInternal(
+      @NotNull HttpServletRequest httpServletRequest,
+      @NotNull HttpServletResponse httpServletResponse,
+      @NotNull FilterChain filterChain)
+      throws ServletException, IOException {
+    String jwt = getJwtFromRequest(httpServletRequest);
+    if (StringUtils.hasText(jwt) && jwtProvider.validateToken(jwt)) {
+      String username = jwtProvider.getUsernameFromJwt(jwt);
+      UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+      UsernamePasswordAuthenticationToken authenticationToken =
+          new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+      authenticationToken.setDetails(
+          new WebAuthenticationDetailsSource().buildDetails(httpServletRequest));
+      SecurityContextHolder.getContext().setAuthentication(authenticationToken);
     }
+    filterChain.doFilter(httpServletRequest, httpServletResponse);
+  }
 
-    private String getJwtFromRequest(HttpServletRequest httpServletRequest) {
-        String bearerToke = httpServletRequest.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToke) &&
-            bearerToke.startsWith("Bearer ")) {
-            return bearerToke.substring(7);
-        }
-        return bearerToke;
+  private String getJwtFromRequest(HttpServletRequest httpServletRequest) {
+    String bearerToke = httpServletRequest.getHeader("Authorization");
+    if (StringUtils.hasText(bearerToke) && bearerToke.startsWith("Bearer ")) {
+      return bearerToke.substring(7);
     }
+    return bearerToke;
+  }
 }

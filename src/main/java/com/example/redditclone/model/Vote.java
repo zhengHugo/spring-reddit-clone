@@ -17,15 +17,18 @@ import static javax.persistence.GenerationType.IDENTITY;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Vote {
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    private Long voteId;
-    private VoteType voteType;
-    @NotNull
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "postId", referencedColumnName = "postId")
-    private Post post;
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "userId", referencedColumnName = "userId")
-    private User user;
+  @Id
+  @GeneratedValue(strategy = IDENTITY)
+  private Long voteId;
+
+  private VoteType voteType;
+
+  @NotNull
+  @ManyToOne(fetch = LAZY)
+  @JoinColumn(name = "postId", referencedColumnName = "postId")
+  private Post post;
+
+  @ManyToOne(fetch = LAZY)
+  @JoinColumn(name = "userId", referencedColumnName = "userId")
+  private User user;
 }

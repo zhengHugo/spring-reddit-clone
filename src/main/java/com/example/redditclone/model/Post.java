@@ -20,23 +20,24 @@ import static javax.persistence.GenerationType.IDENTITY;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Post {
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    private Long postId;
-    @NotBlank(message = "Post name cannot be empty or null")
-    private String postName;
-    @Nullable
-    private String url;
-    @Nullable
-    @Lob
-    private String description;
-    private Integer voteCount = 0;
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "userId", referencedColumnName = "userId")
-    private User user;
-    private Instant createdDate;
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "id", referencedColumnName = "id")
-    private Subreddit subreddit;
+  @Id
+  @GeneratedValue(strategy = IDENTITY)
+  private Long postId;
 
+  @NotBlank(message = "Post name cannot be empty or null")
+  private String postName;
+
+  @Nullable private String url;
+  @Nullable @Lob private String description;
+  private Integer voteCount = 0;
+
+  @ManyToOne(fetch = LAZY)
+  @JoinColumn(name = "userId", referencedColumnName = "userId")
+  private User user;
+
+  private Instant createdDate;
+
+  @ManyToOne(fetch = LAZY)
+  @JoinColumn(name = "id", referencedColumnName = "id")
+  private Subreddit subreddit;
 }
